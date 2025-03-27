@@ -1,45 +1,48 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import Ridge
+from scipy.spatial.distance import cdist
 
+# XOR Input and Output
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([0, 1, 1, 0])  # XOR labels
 
-# Step function (for perceptron output)
-def step_function(x):
-    return np.where(x >= 0, 1, 0)
+# Define RBF function (Gaussian Kernel)
+def rbf(x, centers, sigma=1.0):
+    return np.exp(-cdist(x, centers) ** 2 / (2 * sigma ** 2))
 
+# RBF Centers (Use Input Data as Centers)
+centers = X.copy()
+sigma = 0.5  # Fixed spread parameter
 
-# Training data (X) and labels (y)
-X = np.array([
-    [0, 0],
-    [0, 1],
-    [1, 0],
-    [1, 1]
-])
-y = np.array([0, 0, 0, 1])  # AND Gate labels
+# Transform Input using RBF
+X_rbf = rbf(X, centers, sigma)
 
-# Initialize weights and bias
-weights = np.random.randn(2) * 0.01  # Small random values
-bias = np.random.randn() * 0.01
-learning_rate = 0.1
-epochs = 10
+# Experiment with different regularization values
+lambdas = [0, 0.01, 0.1, 1, 10]  # Regularization parameters
+weights_list = []
 
-# Perceptron Learning Algorithm
-for epoch in range(epochs):
-    total_error = 0
-    for i in range(len(X)):
-        # Compute weighted sum
-        z = np.dot(X[i], weights) + bias
-        y_pred = step_function(z)  # Apply activation function
+plt.figure(figsize=(8, 5))
 
-        # Compute error
-        error = y[i] - y_pred
-        total_error += abs(error)
+for reg in lambdas:
+    # Train using Ridge Regression
+    model = Ridge(alpha=reg, fit_intercept=False)  # Regularization controlled by alpha
+    model.fit(X_rbf, y)
+    weights_list.append(model.coef_)
 
-        # Update weights and bias
-        weights += learning_rate * error * X[i]
-        bias += learning_rate * error
+    # Predicted Outputs
+    y_pred = model.predict(X_rbf)
 
-    print(f"Epoch {epoch + 1} - Total Error: {total_error}")
+    # Plot Results
+    plt.plot(y_pred, marker='o', label=f"λ={reg}")
 
-# Final predictions
-predictions = step_function(np.dot(X, weights) + bias)
-print("\nFinal Predictions:", predictions)
-print("Correct Predictions:", np.array_equal(predictions, y))
+plt.xlabel("XOR Sample Index")
+plt.ylabel("Predicted Output")
+plt.title("Effect of Regularization on RBF Network for XOR")
+plt.legend()
+plt.grid()
+plt.show()
+
+# Print final weights for analysis
+for i, reg in enumerate(lambdas):
+    print(f"λ={reg}, Weights: {weights_list[i]}")

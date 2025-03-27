@@ -1,24 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.special import expit  # Sigmoid
 
-# Activation Functions
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-
-def relu(x):
-    return np.maximum(0, x)
-
-def tanh(x):
-    return np.tanh(x)
-
-# Generate values for plotting
 x = np.linspace(-5, 5, 100)
 
-# Plot the activation functions
-plt.figure(figsize=(8,6))
-plt.plot(x, sigmoid(x), label="Sigmoid", linestyle='dashed')
-plt.plot(x, relu(x), label="ReLU", linestyle='dotted')
-plt.plot(x, tanh(x), label="Tanh", linestyle='solid')
+activations = {
+    "Sigmoid": expit(x),
+    "ReLU": np.maximum(0, x),
+    "Tanh": np.tanh(x),
+    "Leaky ReLU": np.where(x > 0, x, 0.01 * x),
+    "ELU": np.where(x > 0, x, 0.01 * (np.exp(x) - 1)),
+    "Softplus": np.log1p(np.exp(x)),
+    "Softsign": x / (1 + np.abs(x))
+}
+
+plt.figure(figsize=(10, 7))
+for name, values in activations.items():
+    plt.plot(x, values, label=name)
+
 plt.legend()
 plt.xlabel("Input")
 plt.ylabel("Output")
