@@ -3,46 +3,18 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import Ridge
 from scipy.spatial.distance import cdist
 
-# XOR Input and Output
 X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-y = np.array([0, 1, 1, 0])  # XOR labels
+y = np.array([0, 1, 1, 0])
 
-# Define RBF function (Gaussian Kernel)
-def rbf(x, centers, sigma=1.0):
-    return np.exp(-cdist(x, centers) ** 2 / (2 * sigma ** 2))
+# RBF transformation using input points as centers
+def rbf_transform(X, centers, sigma=0.5):
+    return np.exp(-cdist(X, centers) ** 2 / (2 * sigma ** 2))
 
-# RBF Centers (Use Input Data as Centers)
-centers = X.copy()
-sigma = 0.5  # Fixed spread parameter
+X_rbf = rbf_transform(X, X)  # Transform inputs using RBF centers
 
-# Transform Input using RBF
-X_rbf = rbf(X, centers, sigma)
+plt.figure()
+for reg in [0, 0.01, 0.1, 1, 10]:
+    model = Ridge(alpha=reg, fit_intercept=False).fit(X_rbf, y)
+    plt.plot(model.predict(X_rbf), 'o-', label=f"λ={reg}")
 
-# Experiment with different regularization values
-lambdas = [0, 0.01, 0.1, 1, 10]  # Regularization parameters
-weights_list = []
-
-plt.figure(figsize=(8, 5))
-
-for reg in lambdas:
-    # Train using Ridge Regression
-    model = Ridge(alpha=reg, fit_intercept=False)  # Regularization controlled by alpha
-    model.fit(X_rbf, y)
-    weights_list.append(model.coef_)
-
-    # Predicted Outputs
-    y_pred = model.predict(X_rbf)
-
-    # Plot Results
-    plt.plot(y_pred, marker='o', label=f"λ={reg}")
-
-plt.xlabel("XOR Sample Index")
-plt.ylabel("Predicted Output")
-plt.title("Effect of Regularization on RBF Network for XOR")
-plt.legend()
-plt.grid()
-plt.show()
-
-# Print final weights for analysis
-for i, reg in enumerate(lambdas):
-    print(f"λ={reg}, Weights: {weights_list[i]}")
+plt.legend(), plt.grid(), plt.show()

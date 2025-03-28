@@ -1,4 +1,6 @@
-#Single layer perceptron
+''' Implement the Gate Operations (AND, OR, XOR, NAND, NOR,
+XNOR, NOT) using Single Layer Perceptron.'''
+
 import numpy as np
 
 class Perceptron:
