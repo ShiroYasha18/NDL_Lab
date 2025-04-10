@@ -9,7 +9,7 @@ class MLP:
         self.W1 = np.random.randn(2, 2)  # Hidden layer weights
         self.W2 = np.random.randn(2)  # Output layer weights
         self.b1 = np.random.randn(2)  # Hidden layer bias
-        self.b2 = np.random.randn()  # Output layer bias
+        self.b2  = np.random.randn()  # Output layer bias
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
