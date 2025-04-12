@@ -7,7 +7,7 @@ data = np.random.multivariate_normal([0, 0], [[3, 2], [2, 2]], 1000)
 w = np.random.randn(2)  
 for x in data:  
     w += 0.01 * np.dot(w, x) * x
-# PCA for comparison  
+# PCA for comparisobb]n
 pca = PCA(n_components=1).fit(data).components_[0]
 # Normalize and visualize  
 w, pca = w / np.linalg.norm(w), pca / np.linalg.norm(pca)  
