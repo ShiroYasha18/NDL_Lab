@@ -8,5 +8,6 @@ for opt_name in ['Adagrad', 'RMSprop', 'Adam']:
     opt = getattr(optim, opt_name)(model.parameters())
     for _ in range(5):  # 5 epochs
         for xb, yb in zip(X.split(64), y.split(64)):  # Manual batches
-            opt.zero_grad(); nn.functional.cross_entropy(model(xb), yb).backward(); opt.step()
+            opt.zero_grad(); nn.functional.cross_entropy(model(xb), yb).backward();opt.step()
+
     print(f"{opt_name}: {(model(X).argmax(1) == y).float().mean():.2f}")
